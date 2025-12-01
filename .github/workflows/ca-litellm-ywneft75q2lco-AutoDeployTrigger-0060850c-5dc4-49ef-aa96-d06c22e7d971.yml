@@ -1,0 +1,49 @@
+name: Trigger auto deployment for ca-litellm-ywneft75q2lco
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/ca-litellm-ywneft75q2lco-AutoDeployTrigger-0060850c-5dc4-49ef-aa96-d06c22e7d971.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CALITELLMYWNEFT75Q2LCO_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CALITELLMYWNEFT75Q2LCO_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CALITELLMYWNEFT75Q2LCO_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: crywneft75q2lco.azurecr.io
+          registryUsername: ${{ secrets.CALITELLMYWNEFT75Q2LCO_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CALITELLMYWNEFT75Q2LCO_REGISTRY_PASSWORD }}
+          containerAppName: ca-litellm-ywneft75q2lco
+          resourceGroup: openwebui-rg
+          imageToBuild: crywneft75q2lco.azurecr.io/ca-litellm-ywneft75q2lco:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
