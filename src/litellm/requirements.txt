@@ -1,4 +1,4 @@
-litellm[proxy]
+litellm[proxy]==1.80.7
 prometheus_client
 langfuse
 prisma
